@@ -2,28 +2,24 @@
 import networkx as nx
 import numpy as np
 import tqdm
-from sklearn.cluster import AffinityPropagation
-import sklearn.metrics.pairwise
-from sklearn.metrics import silhouette_score
 import multiprocessing as mp
-from scipy.cluster.hierarchy import dendrogram, linkage
-from scipy.spatial.distance import pdist
-from scipy.cluster.hierarchy import fcluster
-from scipy.cluster.vq import whiten
+
+from sklearn.metrics import silhouette_score
+import scipy.sparse as sp
+import scipy as spy
 from scipy.sparse import csgraph
 from scipy.sparse.linalg import eigsh
 from scipy.sparse.linalg import svds
+from scipy.cluster.vq import kmeans,vq
+from scipy.spatial.distance import cdist
 
-#import logging
+import sklearn.metrics.pairwise
+from sklearn.cluster import MiniBatchKMeans
+
 import torch
-import scipy.sparse as sp
 from collections import defaultdict
 from itertools import product
 import operator
-from sklearn.cluster import AffinityPropagation,DBSCAN,MiniBatchKMeans
-from scipy.cluster.vq import kmeans,vq
-from scipy.spatial.distance import cdist
-import scipy as spy
 
 import logging
 logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
