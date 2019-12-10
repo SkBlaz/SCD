@@ -1,7 +1,14 @@
 # Code for the paper "Embedding-based Silhouette Community Detection"
 
+![Example communities](figures/comdet.png)
 This is the official repository for the following paper (please, cite if used):
 To install the library, please do:
+
+```
+pip3 install -r requirements.txt
+```
+
+Install PyTorch (GPU or CPU version). And:
 
 ```
 pip install https://github.com/SkBlaz/SCD.git
