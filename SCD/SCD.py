@@ -26,20 +26,22 @@ logging.basicConfig(format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:
 logging.getLogger().setLevel(logging.INFO)
 
 class SCD_obj:
-    def __init__(self,input_graph,verbose=True, node_names=None,input_type="sparse_matrix"):
+    def __init__(self,input_graph,verbose=True, node_names=None,input_type="sparse_matrix",device = "cpu"):
 
-        ## Convert internally
+        """
+        Initiator class
+        """
         if input_type == "networkx":
             node_names = list(input_graph.nodes())
             input_graph = nx.to_scipy_sparse_matrix(input_graph)
             
         self.verbose = verbose
+        self.device = device
         self.all_scores = None
         self.node_names = node_names
         self.cluster_quality = {}
         self.default_parameters = {"clustering_scheme":"hierarchical","max_com_num":"100","verbose":False,"sparisfy":True,"parallel_step":6,"prob_threshold":0.0005, "community_range":[1,3,5,7,11,20,40,50,100,200,300],"fine_range":3,"lag_threshold":10,"num_important":10000}
         self.input_graph = input_graph
-#        self.nx_object = nx.from_scipy_sparse_matrix(input_graph)
         
     def page_rank_kernel(self,index_row):
         """
@@ -87,6 +89,11 @@ class SCD_obj:
                 return dict(zip(nodelist, map(float, x)))
 
     def stochastic_normalization(self,matrix=None,return_matrix=False):
+
+        """
+        Perform stochastic normalization
+        """
+        
         if matrix is None:
             matrix = self.input_graph.tolil()        
         try:
@@ -144,7 +151,12 @@ class SCD_obj:
                          damping=0.5,
                          spread_step=10,
                          spread_percent=0.3,
-                         try_shrink = True):    
+                         try_shrink = True):
+
+        """
+        Personalized PageRank with shrinking
+        """
+        
         assert(len(start_nodes)) > 0
         size = self.normalized.shape[0]
         if start_nodes is None:
@@ -210,11 +222,17 @@ class SCD_obj:
             return rank_vec.flatten()
 
     def emit(self,message):
+        """
+        Simple logging wrapper
+        """
         logging.info(message)
-#        print("*"*5+message+"*"*5)
-        # self.logger.info(message)
 
     def get_sparse_walk_matrix(self,num_important,prob_threshold=0,parallel_step=6):
+
+        """
+        Get walk matrix
+        """
+        
         if self.verbose:
             self.emit("Walking..")
 
@@ -243,11 +261,8 @@ class SCD_obj:
     def approximate_normalized_graph_laplacian(self,A, rank, which="LA"):
         n = A.shape[0]
         L, d_rt = csgraph.laplacian(A, normed=True, return_diag=True)
-        # X = D^{-1/2} W D^{-1/2}
         X = sp.identity(n) - L
         self.emit("Eigen decomposition...")
-        #evals, evecs = sparse.linalg.eigsh(X, rank,
-        #        which=which, tol=1e-3, maxiter=300)
         evals, evecs = eigsh(X, rank, which=which)
         self.emit("Maximum eigenvalue {}, minimum eigenvalue {}".format(np.max(evals), np.min(evals)))
         self.emit("Computing D^{-1/2}U..")
@@ -258,7 +273,7 @@ class SCD_obj:
     def approximate_deepwalk_matrix(self,evals, D_rt_invU, window, vol, b):
         evals = self.deepwalk_filter(evals, window=window)
         X = sp.diags(np.sqrt(evals)).dot(D_rt_invU.T).T
-        device = torch.device("cpu")#('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device(self.device) #('cuda' if torch.cuda.is_available() else 'cpu')
         m = torch.from_numpy(X).to(device)
         vx = torch.tensor(vol/b).to(device)
         mmt = torch.mm(m,m.t()).double()
@@ -358,6 +373,7 @@ class SCD_obj:
         else:
             fine_interval = int((community_range[2]-1)/2)
             community_range = np.arange(community_range[0],community_range[1],community_range[2])
+        
         nopt = 0            
         lag_num = 0
         mx_opt = 0
@@ -366,7 +382,7 @@ class SCD_obj:
         all_scores = []
         for nclust in community_range:
             dx_hc = defaultdict(list)
-            clustering_algorithm = MiniBatchKMeans(n_clusters=nclust)
+            clustering_algorithm = MiniBatchKMeans(n_clusters=nclust, init_size = 2*nclust)
             clusters = clustering_algorithm.fit_predict(vectors).tolist()
             for a, b in zip(clusters, self.node_names):
                 dx_hc[a].append(b)
@@ -396,6 +412,9 @@ class SCD_obj:
                     self.emit("Stopping criterion reached. Fine tunning.")
                     break
                 lag_num+=1
+
+        if self.verbose:
+            self.emit("Initial screening returned optimum of: {}".format(nopt))
 
         ## Do some fine tunning of the k
         if fine_interval > 0:
@@ -468,7 +487,7 @@ class SCD_obj:
 
         if community_range == "auto":
             K = self.input_graph.shape[1]
-            community_range = np.arange(int(np.power(K, 2/3)),K,int(np.power(K, 2/3)))
+            community_range = [int(np.power(K, 2/3)),K,int(np.power(K, 2/3))]
         
         if self.verbose:
             self.emit("Important nodes: {}".format(num_important))
