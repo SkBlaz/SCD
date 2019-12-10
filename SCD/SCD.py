@@ -468,7 +468,7 @@ class SCD_obj:
 
         if community_range == "auto":
             K = self.input_graph.shape[1]
-            community_range = [int(np.power(K, 2/3))]
+            community_range = np.arange(int(np.power(K, 2/3)),K,int(np.power(K, 2/3)))
         
         if self.verbose:
             self.emit("Important nodes: {}".format(num_important))
