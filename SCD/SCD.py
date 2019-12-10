@@ -352,8 +352,12 @@ class SCD_obj:
         if self.verbose:
             self.emit("Doing kmeans search")
 
-        fine_interval = int((community_range[2]-1)/2)
-        community_range = np.arange(community_range[0],community_range[1],community_range[2])
+        if len(community_range) == 1:
+            fine_interval = 0
+            
+        else:
+            fine_interval = int((community_range[2]-1)/2)
+            community_range = np.arange(community_range[0],community_range[1],community_range[2])
         nopt = 0            
         lag_num = 0
         mx_opt = 0
@@ -382,6 +386,7 @@ class SCD_obj:
                     self.emit("Improved quality: {}, found {} communities. Maximum size {}".format(np.round(mx,3),nopt, lx))
                 mx_opt = mx
                 self.opt_clust = partitions
+                
             else:
                 lag_num+=1
                 if self.verbose:
@@ -393,29 +398,31 @@ class SCD_obj:
                 lag_num+=1
 
         ## Do some fine tunning of the k
-        fine_range = [x for x in np.arange(nopt-fine_interval,nopt+fine_interval,1) if x > 0]
-        
-        for cand in tqdm.tqdm(fine_range):
-            dx_hc = defaultdict(list)
-            clustering_algorithm = MiniBatchKMeans(n_clusters=nclust)
-            clusters = clustering_algorithm.fit_predict(vectors).tolist()
-            for a, b in zip(clusters,self.node_names):
-                dx_hc[a].append(b)
-            partitions = dx_hc
-            if self.clustering_measure == "silhouette" or self.clustering_measure == "entropy":
-                mx = self.compute_cluster_quality(clusters,optional_data=vectors)
-            else:
-                mx = self.compute_cluster_quality(clustering_algorithm.cluster_centers_)
-            if mx > mx_opt+improvement_step:
-                lag_num = 0
-                opt_partitions = partitions
-                if self.verbose:
-                    self.emit("Improved quality: {}, found {} communities.".format(np.round(mx,2),len(partitions)))
-                mx_opt = mx
-                self.opt_clust = dx_hc
-                nopt = nclust
+        if fine_interval > 0:
+            fine_range = [x for x in np.arange(nopt-fine_interval,nopt+fine_interval,1) if x > 0]
+            for cand in tqdm.tqdm(fine_range):
+                dx_hc = defaultdict(list)
+                clustering_algorithm = MiniBatchKMeans(n_clusters=nclust)
+                clusters = clustering_algorithm.fit_predict(vectors).tolist()
+                for a, b in zip(clusters,self.node_names):
+                    dx_hc[a].append(b)
+                partitions = dx_hc
+                if self.clustering_measure == "silhouette" or self.clustering_measure == "entropy":
+                    mx = self.compute_cluster_quality(clusters,optional_data=vectors)
+                else:
+                    mx = self.compute_cluster_quality(clustering_algorithm.cluster_centers_)
+                if mx > mx_opt+improvement_step:
+                    lag_num = 0
+                    opt_partitions = partitions
+                    if self.verbose:
+                        self.emit("Improved quality: {}, found {} communities.".format(np.round(mx,2),len(partitions)))
+                    mx_opt = mx
+                    self.opt_clust = dx_hc
+                    nopt = nclust
+                    
         if return_score:
             return opt_partitions,mx_opt,all_scores
+        
         else:
             return opt_partitions
 
@@ -461,7 +468,7 @@ class SCD_obj:
 
         if community_range == "auto":
             K = self.input_graph.shape[1]
-            community_range = np.arange(int(np.power(K, 2/3)), K, int(np.power(K, 2/3)))
+            community_range = [int(np.power(K, 2/3))]
         
         if self.verbose:
             self.emit("Important nodes: {}".format(num_important))
@@ -488,10 +495,12 @@ class SCD_obj:
                             self.emit("testing setting {} {} {}".format(n,w,d))
                         vectors = self.netMF_large(self.input_graph,embedding_dimension=d,window=w,negative=n)
                         tmp_partition, score, score_dump = self.kmeans_clustering(vectors,community_range,stopping,improvement_step,return_score=True)
-                        if use_normalized_scores:
+                        
+                        if use_normalized_scores and len(score_dump) > 1:
                             normalized_score = (score - np.min(score_dump))/(np.max(score_dump) - np.min(score_dump))
                         else:
                             normalized_score = score
+
                         norm_score_dump = (score_dump - np.min(score_dump))/(np.max(score_dump) - np.min(score_dump))
 
                         score_mean = np.mean(norm_score_dump) ## this was added after publication as it works better!
@@ -503,8 +512,6 @@ class SCD_obj:
                             best_partition = tmp_partition
                             self.opt_score = normalized_score
                             self.opt_config = {"score":normalized_score,"negative":n,"window":w,"dimension":d,"Num communities":len(tmp_partition), "smean":score_mean}
-                            if self.verbose:
-                                self.emit(self.opt_config)
                         else:
                             self.emit("Invalid embedding")
 
