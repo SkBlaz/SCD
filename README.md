@@ -1,4 +1,8 @@
-# Code for the paper "Embedding-based Silhouette Community Detection"
+Embedding-based Silhouette Community Detection
+
+> Embeddings are becoming mainstream way for network-based learning.
+> Can unsupervised structure be derived from geometry of embeddings?
+> SCD is an embedding-agnostic way of community detection.
 
 ![Example communities](figures/comdet.png)
 This is the official repository for the following paper (please, cite if used):
@@ -62,7 +66,7 @@ print(communities)
 
 
 Note that:
-1. SCD operates on sparse matrices. If you network is e.g., a networkx object, convert it with *nx.to_sparse_scipy_matrix()* method. Example parser that does that for the user is available in SCD/parsers.py
+1. SCD operates on sparse matrices. If your network is e.g., a networkX object, convert it with *nx.to_sparse_scipy_matrix()* method. Example parser that does that for the user is available in SCD/parsers.py
 
 To check if the performance of the library is OK, one can perform simple tests as follows:
 
