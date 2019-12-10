@@ -1,0 +1,27 @@
+### load and plot nicely.
+import pickle
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+if __name__ == "__main__":
+
+    p_file = "./exhaustive.pickle"
+
+    with open(p_file, "rb") as input_file:
+        out_struct = pickle.load(input_file)
+
+    krange = [1,5,10,20,50]
+    for j in krange:
+        data = out_struct[j]
+        x = [x[0] for x in data]
+        y = [x[1] for x in data]
+        max_im = np.argmax(y)
+        max_point_x = x[max_im]
+        max_point_y = y[max_im]
+#        plt.plot(max_point_x,max_point_y,label="max; k = {}".format(j),marker="v")
+        plt.scatter(x,y,label="k = {}".format(j),s=12)
+    plt.legend()
+    plt.xlabel("Number of communities (k)")
+    plt.ylabel("Silhouette score")
+    plt.tight_layout()
+    plt.show()

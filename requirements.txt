@@ -1,0 +1,6 @@
+networkx
+tqdm
+scikit-learn
+py3plex
+numpy
+scipy

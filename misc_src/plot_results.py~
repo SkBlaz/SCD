@@ -1,0 +1,62 @@
+## basic result ploting
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+def read_result_file(fname):
+
+    rdf = pd.DataFrame()
+    with open(fname) as fn:
+        for line in fn:
+            line = line.strip().split("\t")
+            algo_string = line[1]
+            algo_name = line[2]
+            ncom = line[3]
+            modularity = float(line[4])
+            nmi = float(line[5])
+            ari = float(line[6])
+            algo_parts = algo_string.split("__")
+
+            number_of_nodes = algo_parts[0]
+            average_deg = algo_parts[1]
+            max_deg = algo_parts[2]
+            expon = algo_parts[3]
+            exp_com = algo_parts[4]
+            mixing = algo_parts[5]
+
+            row = {"Algorithm":algo_name,
+                   "Number of communities": ncom,
+                   "Modularity":modularity,
+                   "NMI":nmi,
+                   "ARI":ari,
+                   "Number of nodes": number_of_nodes,
+                   "Average degree":average_deg,
+                   "Maximum degree":max_deg,
+                   "Exponent":expon,
+                   "Exponent community":exp_com,
+                   "Mixing":mixing}
+            rdf = rdf.append(row,ignore_index=True)
+        return rdf
+ 
+    
+def some_basic_plots(rframe):
+
+#    sns.boxplot(rframe.Algorithm,rframe.Modularity)
+#    plt.show()
+#    sns.scatterplot(rframe.Mixing,rframe.NMI,hue=rframe.Algorithm)
+#    plt.show()
+    sns.scatterplot(rframe['Number of nodes'],rframe.NMI,hue=rframe.Algorithm)
+    plt.show()
+
+    sns.scatterplot(rframe['Number of nodes'],rframe.ARI,hue=rframe.Algorithm)
+    plt.show()
+
+    
+
+
+if __name__ == "__main__":
+
+    result_file = "./results/results.tsv"
+    result_frame = read_result_file(result_file)
+    print(result_frame.columns)
+    some_basic_plots(result_frame)
