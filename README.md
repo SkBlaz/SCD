@@ -15,7 +15,7 @@ pip3 install -r requirements.txt
 Install PyTorch (GPU or CPU version). And:
 
 ```
-pip install https://github.com/SkBlaz/SCD.git
+pip3 install https://github.com/SkBlaz/SCD.git
 ```
 
 or (within the repo folder)
@@ -34,7 +34,7 @@ import scipy.io
 graph = scipy.io.loadmat("example_networks/example_network.mat")
 graph = graph['network']
 node_names = list(range(graph.shape[1]))
-SCD_detector = SCD_obj(graph,node_names=node_names) #instantiate
+SCD_detector = SCD.SCD_obj(graph,node_names=node_names) #instantiate
 
 ## all hyperparameters
 SCD_detector.list_arguments()
