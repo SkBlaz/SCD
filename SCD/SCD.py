@@ -301,6 +301,12 @@ class SCD_obj:
         self.emit("Running TorchNetMF for a large window size...")
         self.emit("Window size is set to be {}".format(window))
 
+        if rank >= A.shape[1]:
+            rank = A.shape[1]-1
+
+        if embedding_dimension >= A.shape[1]:
+            embedding_dimension = 8
+
         # load adjacency matrix
         vol = float(A.sum())
         
@@ -380,9 +386,10 @@ class SCD_obj:
         opt_partitions = None
         fine_range = None
         all_scores = []
+
         for nclust in community_range:
             dx_hc = defaultdict(list)
-            clustering_algorithm = MiniBatchKMeans(n_clusters=nclust, init_size = 2*nclust)
+            clustering_algorithm = MiniBatchKMeans(n_clusters=nclust, init_size = 3*nclust)
             clusters = clustering_algorithm.fit_predict(vectors).tolist()
             for a, b in zip(clusters, self.node_names):
                 dx_hc[a].append(b)
@@ -421,7 +428,7 @@ class SCD_obj:
             fine_range = [x for x in np.arange(nopt-fine_interval,nopt+fine_interval,1) if x > 0]
             for cand in tqdm.tqdm(fine_range):
                 dx_hc = defaultdict(list)
-                clustering_algorithm = MiniBatchKMeans(n_clusters=nclust)
+                clustering_algorithm = MiniBatchKMeans(n_clusters=nclust, init_size = 3*nclust)
                 clusters = clustering_algorithm.fit_predict(vectors).tolist()
                 for a, b in zip(clusters,self.node_names):
                     dx_hc[a].append(b)
