@@ -490,7 +490,7 @@ class SCD_obj:
             print(k,"default setting:",v)
         
     
-    def detect_communities(self,verbose=False,sparisfy=True,parallel_step=6,prob_threshold=0.0005, community_range = "auto", num_important=100,clustering_measure="silhouette",stopping=5,improvement_step=0.05,node_feature_type = "netmf_embedding", negative_range = [1], window_sizes = [3], dims = [64],output_format = "nongrouped", use_normalized_scores=True):
+    def detect_communities(self,verbose=False,sparisfy=True,parallel_step=6,prob_threshold=0.0005, community_range = "auto", num_important=100,clustering_measure="silhouette",stopping=5,improvement_step=0.05,node_feature_type = "netmf_embedding", negative_range = [1], window_sizes = [3], dims = [64],output_format = "nongrouped", use_normalized_scores=True, custom_embedding_vectors = None):
 
         if community_range == "auto":
             K = self.input_graph.shape[1]
@@ -545,6 +545,11 @@ class SCD_obj:
             vectors = self.get_sparse_walk_matrix(num_important,prob_threshold,parallel_step)
             self.emit("Starting cluster detection..")
             best_partition, score, score_dump = self.kmeans_clustering(vectors,community_range,stopping,improvement_step, return_score=True)
+            self.opt_score = score
+
+        elif node_feature_type == "custom_embedding":
+            self.emit("Starting cluster detection..")
+            best_partition, score, score_dump = self.kmeans_clustering(custom_embedding_vectors,community_range,stopping,improvement_step, return_score=True)
             self.opt_score = score
             
         if self.verbose:
