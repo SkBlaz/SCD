@@ -15,7 +15,8 @@ pip3 install -r requirements.txt
 Install PyTorch (GPU or CPU version). And:
 
 ```
-pip3 install https://github.com/SkBlaz/SCD.git
+pip3 install git+https://github.com/skblaz/SCD.git
+
 ```
 
 or (within the repo folder)
