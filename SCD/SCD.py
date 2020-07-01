@@ -494,7 +494,8 @@ class SCD_obj:
 
         if community_range == "auto":
             K = self.input_graph.shape[1]
-            community_range = [int(np.power(K, 2/3)),K,int(np.power(K, 2/3))]
+            kpow = int(0.42*np.power(K, 2/3) - 5.7)
+            community_range = [kpow,K,kpow]
         
         if self.verbose:
             self.emit("Important nodes: {}".format(num_important))
@@ -571,9 +572,10 @@ class SCD_obj:
 if __name__ == "__main__":
 
     import scipy.io
-    graph = scipy.io.loadmat("./Blogspot.mat")
+    graph = scipy.io.loadmat("../example_networks/example_network.mat")
     graph = graph['network']
     node_names = list(range(graph.shape[1]))
     NRC= SCD_obj(graph,node_names=node_names)
     param2 = {"verbose":True,"parallel_step":16}
     communities = NRC.detect_communities(**param2)
+ls 
