@@ -179,10 +179,21 @@ plt.show()
 
 # Citation
 ```
-@article{vskrlj2019embedding,
-  title={Embedding-based Silhouette Community Detection},
-  author={{\v{S}}krlj, Bla{\v{z}} and Kralj, Jan and Lavra{\v{c}}, Nada},
-  journal={arXiv preprint arXiv:1908.02556},
-  year={2019}
+@Article{Škrlj2020,
+author={{\v{S}}krlj, Bla{\v{z}}
+and Kralj, Jan
+and Lavra{\v{c}}, Nada},
+title={Embedding-based Silhouette community detection},
+journal={Machine Learning},
+year={2020},
+month={Jul},
+day={27},
+abstract={Mining complex data in the form of networks is of increasing interest in many scientific disciplines. Network communities correspond to densely connected subnetworks, and often represent key functional parts of real-world systems. This paper proposes the embedding-based Silhouette community detection (SCD), an approach for detecting communities, based on clustering of network node embeddings, i.e. real valued representations of nodes derived from their neighborhoods. We investigate the performance of the proposed SCD approach on 234 synthetic networks, as well as on a real-life social network. Even though SCD is not based on any form of modularity optimization, it performs comparably or better than state-of-the-art community detection algorithms, such as the InfoMap and Louvain. Further, we demonstrate that SCD's outputs can be used along with domain ontologies in semantic subgroup discovery, yielding human-understandable explanations of communities detected in a real-life protein interaction network. Being embedding-based, SCD is widely applicable and can be tested out-of-the-box as part of many existing network learning and exploration pipelines.},
+issn={1573-0565},
+doi={10.1007/s10994-020-05882-8},
+url={https://doi.org/10.1007/s10994-020-05882-8}
+}
+
+
 }
 ```
