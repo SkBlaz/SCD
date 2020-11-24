@@ -9,7 +9,7 @@ from setuptools.extension import Extension
 import argparse
     
 setup(name='SCD',
-      version='0.01',
+      version='0.02',
       description="Embedding-based Silhouette Community Detection",
       url='https://github.com/SkBlaz/SCD',
       python_requires='>3.6.0',

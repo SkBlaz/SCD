@@ -642,6 +642,7 @@ class SCD_obj:
                             self.all_scores = score_dump
                             self.opt_k = len(tmp_partition)
                             best_partition = tmp_partition
+                            self.final_embedding = vectors
                             self.opt_score = normalized_score
                             self.opt_config = {
                                 "score": normalized_score,

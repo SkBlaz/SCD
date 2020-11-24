@@ -12,3 +12,6 @@ SCD_detector.list_arguments()
 ## set hyperparameters
 param2 = {"verbose":True,"parallel_step":8}
 communities = SCD_detector.detect_communities(**param2)
+
+## the underlying representations can be accessed as follows
+node_embedding = SCD_detector.final_embedding
