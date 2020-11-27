@@ -1,0 +1,8 @@
+on: [push]
+      steps:
+        - uses: actions/checkout@v1
+        - uses: skblaz/SCD@master
+          with:
+            REMOTE: 'https://github.com/knowledge-technologies/SCD.git'
+            GIT_USERNAME: skblaz
+            GIT_PASSWORD: ${{ secrets.GIT_PASSWORD }}
