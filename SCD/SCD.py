@@ -582,6 +582,7 @@ class SCD_obj:
             K = self.input_graph.shape[1]
             kpow = int(0.42 * np.power(K, 2 / 3) - 5.7)
             community_range = [kpow, K, kpow]
+            self.emit(f"Estimated range to be explored: {community_range}")
 
         if self.verbose:
             self.emit("Important nodes: {}".format(num_important))
