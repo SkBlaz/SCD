@@ -1,0 +1,44 @@
+
+###############################################################################
+
+
+
+#  To comment a line type #       
+#  The file expects a list of 6 numbers in this order:
+
+# number of nodes; 
+# average degree;  
+# maximum degree
+# exponent for the degree distribution;
+# exponent for the community size distribution;
+# mixing parameter
+
+
+###############################################################################
+#
+#
+# there can be two more numbers to set the range of possible values for the community sizes
+# if there are only 6 values that range will be automatically set by the program close to the minimum and maximum degree of the nodes
+# 
+#
+#
+#
+###############################################################################
+###############################################################################
+###############################################################################
+###############################################################################
+
+
+1000	# number of nodes
+15	# average degree
+50	# maximum degree
+2	# exponent for the degree distribution
+1	# exponent for the community size distribution
+0.2	# mixing parameter
+20	# minimum for the community sizes (optional; just comment this line, if you wish)
+50	# maximum for the community sizes (optional; just comment this line, if you wish)
+
+
+################################################################################
+################################################################################
+
